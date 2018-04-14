@@ -2,6 +2,7 @@ import svgwrite
 from svgwrite import cm
 import numpy as np
 import sys
+import os
 
 """
 http://pythonhosted.org/svgwrite/overview.html
@@ -19,6 +20,7 @@ def bit_matrix(num,bits):
             bit_mat[i,j] = bin_str[i*sqbits+j]
     return np.fliplr(np.fliplr(bit_mat.T).T).T
 
+
 def draw_bit_matrix(bit_mat, size):
     """
     [[insert,size,fill],
@@ -35,8 +37,10 @@ def draw_bit_matrix(bit_mat, size):
             draw_attrs += [ [insert, size, fill] ]
     return draw_attrs
 
+
 def next_level(level_side,area_ratio):
     return np.sqrt((level_side**2)/area_ratio)
+
 
 def next_left_top(level_side,next_level_side):
     lt = level_side/2.-(next_level_side/2.)
@@ -68,10 +72,12 @@ def draw_tag(drawObj,lx,ly,area_ratio,num_bits,level_side,num_tag):
         fill = draw_attr[2]
         drawObj.add(drawObj.rect(insert=(lt1*cm,lt2*cm), size=(size1*cm, size2*cm), fill=fill))
 
+
 def main(robotNumber, lvlSide = 8.0, numBit = 9):
     # get params from argv
     if len(sys.argv) < 2:
         print "usage1: python generate_tag.py [number between 0-2^9 -1]\nusage2: python generate_tag.py all\nall will save 2*99 tags in .svg\n 6 x file tags to fit an A4 sheet."
+    
     input_arg = (robotNumber)
     num_bits = numBit
     area_ratio = 1.4
@@ -79,6 +85,7 @@ def main(robotNumber, lvlSide = 8.0, numBit = 9):
     lx = 0
     ly = 0
     distance = 0.5
+    
     if input_arg == 'all':
         drawObj = svgwrite.Drawing('tag_'+`0`+'_'+`8`+ '_' + str(lvlSide) +'.svg', profile='tiny')#, width=`level_side`+'cm', height=`level_side`+'cm')
         for i in range(2**num_bits):
@@ -100,25 +107,83 @@ def main(robotNumber, lvlSide = 8.0, numBit = 9):
         draw_tag(drawObj,lx,ly,area_ratio,num_bits,level_side,num_tag)
         drawObj.save()
         
-    if lvlSide == 8.0:
-        paragraph = drawObj.add (drawObj.g (font_size=14))
-        paragraph.add (drawObj.text (input_arg, (135, 38)))
-    elif lvlSide == 4.0:
-        paragraph = drawObj.add (drawObj.g (font_size=10))
-        paragraph.add (drawObj.text (input_arg, (65, 19)))
-    drawObj.save ()
+	if lvlSide == 8.0:
+	    paragraph = drawObj.add (drawObj.g (font_size=14))
+	    paragraph.add (drawObj.text (input_arg, (135, 38)))
+	elif lvlSide == 4.0:
+	    paragraph = drawObj.add (drawObj.g (font_size=10))
+	    paragraph.add (drawObj.text (input_arg, (65, 19)))
+	drawObj.save ()
 
+
+# Insere le PNG correspondant a l'image dans le fichier LaTeX pour ensuite en faire un PDF
+def printTag (numberL, numberT, size = 8.0):
+    file = open (r'pdf.tex', 'r')
+    lines = file.readlines ()
+    lines [numberL] = "\includegraphics[width=" + size + "cm]{tag_" + numberT + size + ".png} \n"
+    file.close ()
+
+    file = open (r'pdf.tex', 'w')
+    file.write (lines)
+    file.close ()
+
+
+def svgToPng (numberT, size = 8.0):
+    file1 = os.system ("ls | grep " + numberT + "*.svg")
+    file2 = file1[0 : len(file1) - 3]
+    file2 = file2 + "png"
+    os.system ("convert " + file1 + file2)
+    os.system ("rm *.svg")
+
+	
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print "You can't give 2 arguments"
-    if (int (sys.argv[1]) > 127):
-        print "You can only generate 127 robot identifiation"
-    main(((int (sys.argv[1]) -1) *4) +1)
-    main(((int (sys.argv[1]) -1) *4) +2)
-    main(((int (sys.argv[1]) -1) *4) +3)
-    main(((int (sys.argv[1]) -1) *4) +4)
-    main(((int (sys.argv[1]) -1) *4) +1, 4.0)
-    main(((int (sys.argv[1]) -1) *4) +2, 4.0)
-    main(((int (sys.argv[1]) -1) *4) +3, 4.0)
-    main(((int (sys.argv[1]) -1) *4) +4, 4.0)
+    if len(sys.argv) > 2:
+        print "You can't give 2 arguments or more"
+        
+    if (sys.argv) < 2:
+        if (int (sys.argv[1]) > 127):
+            print "You can only generate 127 robots identifiation"
+       	
+    numberA = ((int (sys.argv[1]) -1) *4)
+    number = numberA + 1
+    main(number)
+    svgToPng (number)
+    printTag (8, number)
+
+    number = number + 1
+    main(number)
+    svgToPng (number)
+    printTag (9, number)
+
+    number = number + 1
+    main(number)
+    svgToPng (number)
+    printTag (12, number)
+
+    number = number + 1
+    main(number)
+    svgToPng (number)
+    printTag (13, number)
+
+    number = numberA
+    number = number + 1
+    main(number, 4.0)
+    svgToPng (number, 4.0)
+    printTag (16, number, 4.0)
+
+    number = number + 1
+    main(number, 4.0)
+    svgToPng (number, 4.0)
+    printTag (17, number, 4.0)
+
+    number = number + 1
+    main(number, 4.0)
+    svgToPng (number, 4.0)
+    printTag (18, number, 4.0)
     
+    number = number + 1
+    main(number, 4.0)
+    svgToPng (number, 4.0)
+    printTag (19, number, 4.0)
+
+
