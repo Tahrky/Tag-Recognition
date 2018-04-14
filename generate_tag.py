@@ -120,7 +120,7 @@ def main(robotNumber, lvlSide = 8.0, numBit = 9):
 def printTag (numberL, numberT, size = 8.0):
     file = open (r'pdf.tex', 'r')
     lines = file.readlines ()
-    lines [numberL] = "\includegraphics[width=" + size + "cm]{tag_" + numberT + size + ".png} \n"
+    lines [numberL] = "\includegraphics[width=" + str(size) + "cm]{tag_" + str(numberT) + str(size) + ".png} \n"
     file.close ()
 
     file = open (r'pdf.tex', 'w')
@@ -130,6 +130,8 @@ def printTag (numberL, numberT, size = 8.0):
 
 def svgToPng (numberT, size = 8.0):
     file1 = os.system ("ls | grep " + str(numberT) + "*.svg")
+    file1 = str(file1)
+    print (file1)
     file2 = file1[0 : len(file1) - 3]
     file2 = file2 + "png"
     os.system ("convert " + file1 + file2)
