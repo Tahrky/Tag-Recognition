@@ -1,8 +1,7 @@
 import svgwrite
 from svgwrite import cm
 import numpy as np
-import sys
-import os
+import subprocess
 
 """
 http://pythonhosted.org/svgwrite/overview.html
@@ -129,13 +128,13 @@ def printTag (numberL, numberT, size = 8.0):
 
 
 def svgToPng (numberT, size = 8.0):
-    file1 = os.system ("ls | grep " + str(numberT) + "*.svg")
+    file1 = subprocess.Popen ("ls | grep " + str(numberT) + "*.svg")
     file1 = str(file1)
     print (file1)
     file2 = file1[0 : len(file1) - 3]
     file2 = file2 + "png"
-    os.system ("convert " + file1 + file2)
-    os.system ("rm *.svg")
+    subprocess.Popen ("convert " + file1 + file2)
+    subprocess.Popen ("rm *.svg")
 
 	
 if __name__ == '__main__':
