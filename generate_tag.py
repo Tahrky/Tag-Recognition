@@ -129,7 +129,7 @@ def printTag (numberL, numberT, size = 8.0):
 
 
 def svgToPng (numberT, size = 8.0):
-    file1 = os.system ("ls | grep " + numberT + "*.svg")
+    file1 = os.system ("ls | grep " + str(numberT) + "*.svg")
     file2 = file1[0 : len(file1) - 3]
     file2 = file2 + "png"
     os.system ("convert " + file1 + file2)
@@ -186,4 +186,5 @@ if __name__ == '__main__':
     svgToPng (number, 4.0)
     printTag (19, number, 4.0)
 
+    os.system ("cp pdf.tex robot_" + str (sys.argv[1]) + "tags.tex")
 
