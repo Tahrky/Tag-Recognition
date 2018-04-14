@@ -1,7 +1,8 @@
 import svgwrite
 from svgwrite import cm
 import numpy as np
-import subprocess
+import os
+import sys
 
 """
 http://pythonhosted.org/svgwrite/overview.html
@@ -119,22 +120,26 @@ def main(robotNumber, lvlSide = 8.0, numBit = 9):
 def printTag (numberL, numberT, size = 8.0):
     file = open (r'pdf.tex', 'r')
     lines = file.readlines ()
-    lines [numberL] = "\includegraphics[width=" + str(size) + "cm]{tag_" + str(numberT) + str(size) + ".png} \n"
+    lines [numberL-1] = "\includegraphics[width=" + str(size) + "cm]{tag_" + str(numberT) + "_" + str(size) + ".png} \n"
     file.close ()
 
     file = open (r'pdf.tex', 'w')
-    file.write (lines)
+    file.writelines (lines)
     file.close ()
 
 
 def svgToPng (numberT, size = 8.0):
-    file1 = subprocess.Popen ("ls | grep " + str(numberT) + "*.svg")
-    file1 = str(file1)
+    execi = "ls | grep " + str(numberT) + "*.svg"
+    file1 = os.popen (execi)
+    file1 = file1.read ()
+    file1 = file1[0 : len(file1) - 1]
     print (file1)
     file2 = file1[0 : len(file1) - 3]
     file2 = file2 + "png"
-    subprocess.Popen ("convert " + file1 + file2)
-    subprocess.Popen ("rm *.svg")
+    execi = "convert " + file1 + " " + file2
+    print (execi)
+    os.popen (execi)
+    os.popen ("rm *.svg")
 
 	
 if __name__ == '__main__':
@@ -188,4 +193,5 @@ if __name__ == '__main__':
     printTag (19, number, 4.0)
 
     os.system ("cp pdf.tex robot_" + str (sys.argv[1]) + "tags.tex")
+    os.system ("rm *.png")
 
