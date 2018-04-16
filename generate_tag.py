@@ -81,13 +81,13 @@ def main(robotNumber, lvlSide = 8.0, numBit = 9):
     input_arg = (robotNumber)
     num_bits = numBit
     area_ratio = 1.4
-    level_side = lvlSide
+    level_side = int (lvlSide)
     lx = 0
     ly = 0
     distance = 0.5
     
     if input_arg == 'all':
-        drawObj = svgwrite.Drawing('tag_'+`0`+'_'+`8`+ '_' + str(lvlSide) +'.svg', profile='tiny')#, width=`level_side`+'cm', height=`level_side`+'cm')
+        drawObj = svgwrite.Drawing('tag_'+`0`+'_'+`8`+ '_' + str(level_side) +'.svg', profile='tiny')#, width=`level_side`+'cm', height=`level_side`+'cm')
         for i in range(2**num_bits):
             num_tag = i
             if i!=0:
@@ -100,24 +100,35 @@ def main(robotNumber, lvlSide = 8.0, numBit = 9):
                 drawObj.save()
                 lx = 0
                 ly = 0
-                drawObj = svgwrite.Drawing('tag_'+`num_tag`+'_'+`num_tag+8` + '_' + str(lvlSide) +'.svg', profile='tiny')#, width=`level_side`+'cm', height=`level_side`+'cm')
+                drawObj = svgwrite.Drawing('tag_'+`num_tag`+'_'+`num_tag+8` + '_' + str(level_side) +'.svg', profile='tiny')#, width=`level_side`+'cm', height=`level_side`+'cm')
     else:
         num_tag = int(input_arg)
-        drawObj = svgwrite.Drawing('tag_'+`num_tag`+ '_' + str(lvlSide) +'.svg', profile='tiny')#, width=`level_side`+'cm', height=`level_side`+'cm')
+        drawObj = svgwrite.Drawing('tag_'+`num_tag`+ '_' + str(level_side) +'.svg', profile='tiny')#, width=`level_side`+'cm', height=`level_side`+'cm')
         draw_tag(drawObj,lx,ly,area_ratio,num_bits,level_side,num_tag)
         drawObj.save()
-        
+    
+    text = ""
+    if int(input_arg)%4 == 1:
+        text = str (input_arg) + "N"
+    elif int(input_arg)%4 == 2:
+        text = str (input_arg) + "E"
+    elif int(input_arg)%4 == 3:
+        text = str (input_arg) + "S"
+    elif int(input_arg)%4 == 2:
+        text = str (input_arg) + "W"
+    
 	if lvlSide == 8.0:
 	    paragraph = drawObj.add (drawObj.g (font_size=14))
-	    paragraph.add (drawObj.text (input_arg, (135, 38)))
+	    paragraph.add (drawObj.text (text, (135, 38)))
 	elif lvlSide == 4.0:
 	    paragraph = drawObj.add (drawObj.g (font_size=10))
-	    paragraph.add (drawObj.text (input_arg, (65, 19)))
+	    paragraph.add (drawObj.text (text, (65, 19)))
 	drawObj.save ()
 
 
 # Insere le PNG correspondant a l'image dans le fichier LaTeX pour ensuite en faire un PDF
 def printTag (numberL, numberT, size = 8.0):
+    size = int (size)
     file = open (r'pdf.tex', 'r')
     lines = file.readlines ()
     lines [numberL-1] = "\includegraphics[width=" + str(size) + "cm]{tag_" + str(numberT) + "_" + str(size) + ".png} \n"
@@ -129,6 +140,7 @@ def printTag (numberL, numberT, size = 8.0):
 
 
 def svgToPng (numberT, size = 8.0):
+    size = int (size)
     execi = "ls | grep " + str(numberT) + "*.svg"
     file1 = os.popen (execi)
     file1 = file1.read ()
@@ -193,5 +205,6 @@ if __name__ == '__main__':
     printTag (19, number, 4.0)
 
     os.system ("cp pdf.tex robot_" + str (sys.argv[1]) + "tags.tex")
+    os.system ("pdflatex robot_" + str (sys.argv[1]) + "tags.tex robot_" + str (sys.argv[1]) + "tags.pdf")
     os.system ("rm *.png")
 
