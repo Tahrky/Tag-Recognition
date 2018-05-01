@@ -8,6 +8,8 @@ import sys
 http://pythonhosted.org/svgwrite/overview.html
 """
 
+directory = "robot_" +  str (sys.argv[1]) + "/"
+
 def bit_matrix(num,bits):
     assert num < 2**bits
     sqbits = int(np.sqrt(bits))
@@ -78,10 +80,10 @@ def main(robotNumber, lvlSide = 8.0, numBit = 9):
     if len(sys.argv) < 2:
         print "usage1: python generate_tag.py [number between 0-2^9 -1]\nusage2: python generate_tag.py all\nall will save 2*99 tags in .svg\n 6 x file tags to fit an A4 sheet."
     
-    input_arg = (robotNumber)
+    input_arg = robotNumber
     num_bits = numBit
     area_ratio = 1.4
-    level_side = int (lvlSide)
+    level_side = lvlSide
     lx = 0
     ly = 0
     distance = 0.5
@@ -102,8 +104,10 @@ def main(robotNumber, lvlSide = 8.0, numBit = 9):
                 ly = 0
                 drawObj = svgwrite.Drawing('tag_'+`num_tag`+'_'+`num_tag+8` + '_' + str(level_side) +'.svg', profile='tiny')#, width=`level_side`+'cm', height=`level_side`+'cm')
     else:
-        num_tag = int(input_arg)
-        drawObj = svgwrite.Drawing('tag_'+`num_tag`+ '_' + str(level_side) +'.svg', profile='tiny')#, width=`level_side`+'cm', height=`level_side`+'cm')
+        num_tag = int (input_arg)
+        num_tagM = int(input_arg)%10
+        lSide = str (int (level_side))
+        drawObj = svgwrite.Drawing(directory + 'tag_'+ str(num_tagM) + '_' + lSide +'.svg', profile='tiny')#, width=`level_side`+'cm', height=`level_side`+'cm')
         draw_tag(drawObj,lx,ly,area_ratio,num_bits,level_side,num_tag)
         drawObj.save()
     
@@ -114,24 +118,25 @@ def main(robotNumber, lvlSide = 8.0, numBit = 9):
         text = str (input_arg) + "E"
     elif int(input_arg)%4 == 3:
         text = str (input_arg) + "S"
-    elif int(input_arg)%4 == 2:
+    elif int(input_arg)%4 == 0:
         text = str (input_arg) + "W"
     
-	if lvlSide == 8.0:
-	    paragraph = drawObj.add (drawObj.g (font_size=14))
-	    paragraph.add (drawObj.text (text, (135, 38)))
-	elif lvlSide == 4.0:
-	    paragraph = drawObj.add (drawObj.g (font_size=10))
-	    paragraph.add (drawObj.text (text, (65, 19)))
-	drawObj.save ()
+    if lvlSide == 8.0:
+        paragraph = drawObj.add (drawObj.g (font_size=14))
+        paragraph.add (drawObj.text (str(text), (135, 38)))
+    elif lvlSide == 4.0:
+        paragraph = drawObj.add (drawObj.g (font_size=10))
+        paragraph.add (drawObj.text (str(text), (65, 19)))
+    drawObj.save ()
 
 
 # Insere le PNG correspondant a l'image dans le fichier LaTeX pour ensuite en faire un PDF
 def printTag (numberL, numberT, size = 8.0):
     size = int (size)
+    numberT = numberT%10
     file = open (r'pdf.tex', 'r')
     lines = file.readlines ()
-    lines [numberL-1] = "\includegraphics[width=" + str(size) + "cm]{tag_" + str(numberT) + "_" + str(size) + ".png} \n"
+    lines [numberL-1] = "\includegraphics[width=" + str(size) + "cm]{" + directory + "tag_" + str(numberT) + "_" + str(size) + ".png} \n"
     file.close ()
 
     file = open (r'pdf.tex', 'w')
@@ -139,19 +144,18 @@ def printTag (numberL, numberT, size = 8.0):
     file.close ()
 
 
-def svgToPng (numberT, size = 8.0):
-    size = int (size)
-    execi = "ls | grep " + str(numberT) + "*.svg"
+def svgToPng (numberT):
+    execi = "ls -1 " + directory + " | grep -e .svg$"
     file1 = os.popen (execi)
     file1 = file1.read ()
     file1 = file1[0 : len(file1) - 1]
-    print (file1)
+    #print (file1)
     file2 = file1[0 : len(file1) - 3]
     file2 = file2 + "png"
-    execi = "convert " + file1 + " " + file2
+    execi = "convert " + directory + file1 + " " + directory + file2
     print (execi)
     os.popen (execi)
-    os.popen ("rm *.svg")
+    os.popen ("rm " + directory + "*.svg")
 
 	
 if __name__ == '__main__':
@@ -161,7 +165,9 @@ if __name__ == '__main__':
     if (sys.argv) < 2:
         if (int (sys.argv[1]) > 127):
             print "You can only generate 127 robots identifiation"
-       	
+    
+    os.system ("mkdir "+ directory)
+  	
     numberA = ((int (sys.argv[1]) -1) *4)
     number = numberA + 1
     main(number)
@@ -186,25 +192,26 @@ if __name__ == '__main__':
     number = numberA
     number = number + 1
     main(number, 4.0)
-    svgToPng (number, 4.0)
+    svgToPng (number)
     printTag (16, number, 4.0)
 
     number = number + 1
     main(number, 4.0)
-    svgToPng (number, 4.0)
+    svgToPng (number)
     printTag (17, number, 4.0)
 
     number = number + 1
     main(number, 4.0)
-    svgToPng (number, 4.0)
+    svgToPng (number)
     printTag (18, number, 4.0)
     
     number = number + 1
     main(number, 4.0)
-    svgToPng (number, 4.0)
+    svgToPng (number)
     printTag (19, number, 4.0)
 
-    os.system ("cp pdf.tex robot_" + str (sys.argv[1]) + "tags.tex")
-    os.system ("pdflatex robot_" + str (sys.argv[1]) + "tags.tex robot_" + str (sys.argv[1]) + "tags.pdf")
-    os.system ("rm *.png")
-
+    os.system ("cp pdf.tex " + directory + "robot_" + str (sys.argv[1]) + "tags.tex")
+    os.system ("pdflatex " + directory + "robot_" + str (sys.argv[1]) + "tags.tex " + directory + "robot_" + str (sys.argv[1]) + "tags.pdf")
+    os.system ("rm -r " + directory)
+    os.system ("rm robot_" + str (sys.argv[1]) + "tags.log")
+    os.system ("rm robot_" + str (sys.argv[1]) + "tags.aux")
