@@ -62,7 +62,7 @@ def estimate_rotation(bounding_box):
     rotation_arg = np.abs(1 - (h/float(w)))*2
     return rad_to_deg( np.arctan(rotation_arg) )
 
-def estimate_distance(rect,actual_side_size=2,frame_h=1080,v_aov=41.,eps=10e-3):
+def estimate_distance(rect, actual_side_size=4, frame_h=640, v_aov=41., eps=10e-3):
     """
         rect type must be np.zeros((4, 2), dtype = np.float32)
         follow this order for input
