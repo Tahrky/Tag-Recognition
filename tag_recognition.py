@@ -24,7 +24,7 @@ lk_params = dict(
             criteria = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03)
             )
 
-def estimate_next_positions(prec_frame,curr_frame,prec_contours,actual_side_size=1):
+def estimate_next_positions(prec_frame, curr_frame, prec_contours, actual_side_size=1):
     prec_points = np.float32(prec_contours).reshape(-1,1,2)
     next_points = np.float32(prec_contours).reshape(-1,1,2)  
     global lk_params
@@ -60,7 +60,7 @@ def estimate_rotation(bounding_box):
     # x,y coord of topleft corner
     x,y,w,h = bounding_box
     rotation_arg = np.abs(1 - (h/float(w)))*2
-    return rad_to_deg( np.arctan(rotation_arg) )
+    return rad_to_deg ( np.arctan (rotation_arg) )
 
 def estimate_distance(rect, actual_side_size=4, frame_h=640, v_aov=41., eps=10e-3):
     """
@@ -92,16 +92,16 @@ def identify_tag_id(tag_image,tiles_x=3,tiles_y=3):
         Calculate the nine bit value of the identification tag.
         The most significant bit is on the top left, the others follows as shown:
 
-         ------- ------- -------
+        --------- -------- --------
         | bit_0 | bit_3 | bit_6 |
-        |       |       |       |
-         ------- ------- -------
+        |          |           |          |
+        --------- --------- --------
         | bit_1 | bit_4 | bit_7 |
-        |       |       |       |
-         ------- ------- -------
+        |          |           |          |
+        --------- -------- ---------
         | bit_2 | bit_5 | bit_8 |
-        |       |       |       |
-         ------- ------- -------
+        |          |           |          |
+        --------- -------- ---------
 
     """
     # normalize tag
@@ -214,10 +214,11 @@ def detect_tags(gray_image, ar, actual_side_size=2, sigma=0.3):
 # @profile
 def edge_detection(gray_image, sigma=0.6):
     """
-        Use Canny edge detction algorythm
+        Use Canny edge detection algorithm
     """
     # compute the mean of image
     y,x = gray_image.shape
+   # Utilité de la variable d'en dessous ?
     win_frac = 3
     l_image = gray_image[y/win_frac:y-(y/win_frac),(x/win_frac):x/(win_frac-1)-((x/win_frac))]
     r_image = gray_image[y/win_frac:y-(y/win_frac),x/(win_frac-1)-(x/win_frac):x-(x/win_frac)]
@@ -225,6 +226,9 @@ def edge_detection(gray_image, sigma=0.6):
     lower = int(max(0, (1.0 - sigma) * v))
     upper = int(min(255, (1.0 + sigma) * v))
     edge_image = cv2.Canny(gray_image, lower, upper)
+    # Display the Canny Edge Image
+    cv2.imshow('Image', edge_image)
+    key = cv2.waitKey(1) & 0xFF
     return edge_image
 
 def is_tag_cnt(cnt_p, cnt_c, ar, sigma, eps):

@@ -113,8 +113,8 @@ if __name__ == '__main__':
         rgb_image[:,:,1] = rgb_image[:,:,0]
         rgb_image[:,:,2] = rgb_image[:,:,0]
         rgb_image = image_utils.draw_contours(rgb_image,tags_contours)
-        cv2.imshow('Image', rgb_image)
-        key = cv2.waitKey(1) & 0xFF
+        #cv2.imshow('Image', rgb_image)
+        #key = cv2.waitKey(1) & 0xFF
 
     cv2.destroyAllWindows()
     tag_detection_experiment.shutdown()
