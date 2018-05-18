@@ -1,3 +1,7 @@
+# Necessite : 	svgwrite
+#			imagemagick (apt install imagemagick) (utilisé pour transformer les svg en png)
+#			texlive (apt install texlive-full) (utilisé pour latex into pdf)
+
 import svgwrite
 from svgwrite import cm
 import numpy as np

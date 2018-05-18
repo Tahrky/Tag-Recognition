@@ -193,9 +193,9 @@ def rectify_perspective_transform(image,rect,maxWidth=30,maxHeight=30):
 # using kernprof -v -l for profiling
 # @profile
 CNT,IDS,DST,ROT = 0,1,2,3
-def detect_tags(gray_image, ar, actual_side_size=2, sigma=0.3):
-    edge_image = edge_detection(gray_image, sigma=sigma)
-    tags_contours = find_tags_contours(edge_image,ar)
+def detect_tags(gray_image, ar, actual_side_size=2, sigma=4.3):
+    edge_image = edge_detection(gray_image, sigma)
+    tags_contours = find_tags_contours(edge_image, ar)
     tags_ids, tags_distances, \
     tags_rotations, tags_bounding_boxes, tags_aligned = [],[],[],[],[]
     for tag_contour in tags_contours:
@@ -216,9 +216,8 @@ def edge_detection(gray_image, sigma=0.6):
     """
         Use Canny edge detection algorithm
     """
-    # compute the mean of image
+
     y,x = gray_image.shape
-   # Utilité de la variable d'en dessous ?
     win_frac = 3
     l_image = gray_image[y/win_frac:y-(y/win_frac),(x/win_frac):x/(win_frac-1)-((x/win_frac))]
     r_image = gray_image[y/win_frac:y-(y/win_frac),x/(win_frac-1)-(x/win_frac):x-(x/win_frac)]
@@ -227,8 +226,8 @@ def edge_detection(gray_image, sigma=0.6):
     upper = int(min(255, (1.0 + sigma) * v))
     edge_image = cv2.Canny(gray_image, lower, upper)
     # Display the Canny Edge Image
-    cv2.imshow('Image', edge_image)
-    key = cv2.waitKey(1) & 0xFF
+    #cv2.imshow('Canny Edge Image : Sigma ' + str(sigma) , edge_image)
+    #key = cv2.waitKey(1) & 0xFF
     return edge_image
 
 def is_tag_cnt(cnt_p, cnt_c, ar, sigma, eps):
