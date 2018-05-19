@@ -193,7 +193,7 @@ def rectify_perspective_transform(image,rect,maxWidth=30,maxHeight=30):
 # using kernprof -v -l for profiling
 # @profile
 CNT,IDS,DST,ROT = 0,1,2,3
-def detect_tags(gray_image, ar, actual_side_size=2, sigma=4.3):
+def detect_tags(gray_image, ar, actual_side_size=2, sigma=0.009):
     edge_image = edge_detection(gray_image, sigma)
     tags_contours = find_tags_contours(edge_image, ar)
     tags_ids, tags_distances, \
@@ -224,7 +224,7 @@ def edge_detection(gray_image, sigma=0.6):
     v = (np.mean(l_image) + np.mean(r_image))/2.
     lower = int(max(0, (1.0 - sigma) * v))
     upper = int(min(255, (1.0 + sigma) * v))
-    edge_image = cv2.Canny(gray_image, lower, upper)
+    edge_image = cv2.Canny(gray_image, 0,100,10 )#lower, upper)
     # Display the Canny Edge Image
     #cv2.imshow('Canny Edge Image : Sigma ' + str(sigma) , edge_image)
     #key = cv2.waitKey(1) & 0xFF
