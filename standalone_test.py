@@ -116,11 +116,29 @@ if __name__ == '__main__':
                 validation.update_motion_eval(1)
             if VALIDATION:
                 validation.update(tags_ids,tags_distances)
+
             message = 'distances: ' + `tags_distances`
-            #message+= '\trotations: ' + `tags_rotations`
-            message += '\tids: ' + `tags_ids`
-            message+= datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+            message += '  -  ids: ' + `tags_ids`
+	    m2 = "["
+	    for id in tags_ids:
+	        text = ""
+	        if int(id)%4 == 1:
+		    id = ((id + (4 - (id%4))) / 4)
+		    text = str (id) + "N"
+	        elif int(id)%4 == 2:
+		    id = ((id + (4 - (id%4))) / 4)
+		    text = str (id)+ "E"
+	        elif int(id)%4 == 3:
+		    id = ((id + (4 - (id%4))) / 4)
+		    text = str (id)+ "S"
+	        elif int(id)%4 == 0:
+		    id = id / 4
+		    text = str (id) + "W"
+		m2 += text + " "
+            m2 += "]"
+            message += "  -  orientation: " + m2 + "\n"
             print message
+
             if TRACKING_EVAL:
                 A_value = tag_detection_experiment.A_value
                 inner_d = tag_detection_experiment.inter_dist

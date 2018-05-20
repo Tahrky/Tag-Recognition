@@ -103,8 +103,27 @@ if __name__ == '__main__':
         newresults, tags_info = tag_detection_experiment.get_results()
         tags_contours, tags_ids, tags_distances, tags_rotations = tags_info
         if newresults and len(tags_contours)>0:
-            message = 'distances: ' + `tags_distances`
-            message += '\tids: ' + `tags_ids`
+            
+	    message = 'distances: ' + `tags_distances`
+            message += '  -  ids: ' + `tags_ids`
+	    m2 = "["
+	    for id in tags_ids:
+	        text = ""
+	        if int(id)%4 == 1:
+		    id = ((id + (4 - (id%4))) / 4)
+		    text = str (id) + "N"
+	        elif int(id)%4 == 2:
+		    id = ((id + (4 - (id%4))) / 4)
+		    text = str (id)+ "E"
+	        elif int(id)%4 == 3:
+		    id = ((id + (4 - (id%4))) / 4)
+		    text = str (id)+ "S"
+	        elif int(id)%4 == 0:
+		    id = id / 4
+		    text = str (id) + "W"
+		m2 += text + " "
+            m2 += "]"
+            message += "  -  orientation: " + m2 + "\n"
             print message
         
         tags_contours, tags_ids, tags_distances, tags_rotations = tags_info
